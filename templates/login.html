@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Contenedor principal con espaciado modular (base de 8px) -->
+<div class="container mt-4" style="--base-spacing: 8px;">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <!-- Card con efecto glassmorphism sutil y sombra para profundidad -->
+      <div class="card-echo shadow-sm rounded" style="background: rgba(248, 249, 254, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(45, 52, 54, 0.2);">
+        <!-- Encabezado con gradiente angular, tipografía personalizada y alto contraste -->
+        <div class="card-header text-white rounded-top" style="background: linear-gradient(45deg, #6a1b9a, #3949ab); padding: calc(var(--base-spacing) * 2);">
+          <h3 class="mb-0" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; color: #f8f9fe;">Iniciar Sesión</h3>
+        </div>
+        <!-- Cuerpo de la tarjeta con espaciado modular -->
+        <div class="card-body" style="padding: calc(var(--base-spacing) * 3);">
+          <form action="{{ url_for('login') }}" method="POST">
+            <!-- Campo de Usuario con ARIA para accesibilidad -->
+            <div class="mb-3" style="margin-bottom: calc(var(--base-spacing) * 3);">
+              <label for="username" class="form-label" style="font-family: 'Inter', sans-serif;">Usuario</label>
+              <input type="text" class="form-control" id="username" name="username" placeholder="Ingrese su usuario" required aria-label="Usuario">
+            </div>
+            <!-- Campo de Contraseña con ARIA para accesibilidad -->
+            <div class="mb-3" style="margin-bottom: calc(var(--base-spacing) * 3);">
+              <label for="password" class="form-label" style="font-family: 'Inter', sans-serif;">Contraseña</label>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su contraseña" required aria-label="Contraseña">
+            </div>
+            <!-- Botón con microinteracción (hover) y tipografía acentuada -->
+            <button type="submit" class="btn-echo btn" 
+              style="background-color: #ff6f00; border: none; font-family: 'Space Grotesk', sans-serif; font-weight: bold; padding: calc(var(--base-spacing) * 1.5) calc(var(--base-spacing) * 3); transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+              Iniciar Sesión
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modo Oscuro: Se aplican variables CSS para una transición limpia -->
+<style>
+  :root {
+    --primary-light: #f8f9fe;
+    --primary-dark: #2d3436;
+    --accent: #ff6f00;
+    --gradient-start: #6a1b9a;
+    --gradient-end: #3949ab;
+    --font-title: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --base-spacing: 8px;
+  }
+
+  /* Modo oscuro */
+  [data-theme="dark"] {
+    --primary-light: #2d3436;
+    --primary-dark: #f8f9fe;
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+  }
+
+  /* Ajustes para formularios */
+  .form-control {
+    border-radius: 0.25rem;
+    border: 1px solid rgba(45, 52, 54, 0.3);
+    font-family: var(--font-body);
+  }
+  
+  .form-label {
+    font-family: var(--font-body);
+    font-weight: 500;
+  }
+  
+  /* Botón custom con hover suave */
+  .btn-echo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+  }
+  
+  /* Transición de tema */
+  body {
+    transition: background-color 0.3s, color 0.3s;
+  }
+</style>
+
+<!-- Script para togglear el modo oscuro (ejemplo de interacción con Alpine.js) -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script>
+  document.addEventListener('alpine:init', () => {
+    Alpine.store('theme', {
+      dark: false,
+      toggle() {
+        this.dark = !this.dark;
+        document.documentElement.setAttribute('data-theme', this.dark ? 'dark' : '');
+      }
+    });
+  });
+</script>
+{% endblock %}

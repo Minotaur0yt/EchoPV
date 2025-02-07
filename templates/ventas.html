@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Contenedor principal con espaciado modular (8px base) -->
+<div class="container mt-4" style="--base-spacing: 8px;">
+  <!-- Título principal con tipografía y alto contraste -->
+  <h2 class="mt-4" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; color: var(--primary-dark, #2d3436);">
+    Nueva Venta
+  </h2>
+  <!-- Card con efecto glassmorphism y sombra sutil -->
+  <div class="card mt-3 shadow-sm rounded" style="background: rgba(248, 249, 254, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(45, 52, 54, 0.2);">
+    <div class="card-body" style="padding: calc(var(--base-spacing) * 3);">
+      <form id="ventaForm" action="{{ url_for('registrar_venta') }}" method="POST">
+        <!-- Grupo para datos de la venta -->
+        <div class="mb-3">
+          <label for="destinatarioInput" class="form-label" style="font-family: 'Inter', sans-serif;">Para (Destinatario):</label>
+          <input type="text" class="form-control" id="destinatarioInput" name="destinatario" placeholder="Nombre de la persona o entidad" aria-label="Destinatario" style="font-family: 'Inter', sans-serif; padding: calc(var(--base-spacing) * 1.5);">
+        </div>
+        <div class="mb-3">
+          <label for="descripcionInput" class="form-label" style="font-family: 'Inter', sans-serif;">Descripción del Cuadro:</label>
+          <textarea class="form-control" id="descripcionInput" name="descripcion" placeholder="Detalles o personalización del cuadro" aria-label="Descripción" rows="3" style="font-family: 'Inter', sans-serif; padding: calc(var(--base-spacing) * 1.5);"></textarea>
+        </div>
+        <!-- Grupo de selección de producto -->
+        <div class="form-group" style="margin-bottom: calc(var(--base-spacing) * 3);">
+          <label for="productoSelect" class="form-label" style="font-family: 'Inter', sans-serif;">Producto:</label>
+          <select class="form-control" id="productoSelect" aria-label="Seleccionar producto" style="font-family: 'Inter', sans-serif; padding: calc(var(--base-spacing) * 1.5);">
+            {% for key, value in products.items() %}
+              <option value="{{ key }}">{{ key }} - Precio: MXN {{ value.precio }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <!-- Grupo de cantidad -->
+        <div class="form-group" style="margin-bottom: calc(var(--base-spacing) * 3);">
+          <label for="cantidadInput" class="form-label" style="font-family: 'Inter', sans-serif;">Cantidad:</label>
+          <input type="number" class="form-control" id="cantidadInput" value="1" min="1" aria-label="Cantidad" style="font-family: 'Inter', sans-serif; padding: calc(var(--base-spacing) * 1.5);">
+        </div>
+        <!-- Grupo de costo -->
+        <div class="form-group" style="margin-bottom: calc(var(--base-spacing) * 3);">
+          <label for="costoInput" class="form-label" style="font-family: 'Inter', sans-serif;">Costo del Producto (MXN):</label>
+          <input type="number" class="form-control" id="costoInput" placeholder="Si se deja vacío se usará el valor por defecto" aria-label="Costo del Producto" style="font-family: 'Inter', sans-serif; padding: calc(var(--base-spacing) * 1.5);">
+        </div>
+        <!-- Botón para agregar producto -->
+        <button type="button" class="btn btn-primary" id="btnAgregar"
+          style="background-color: #ff6f00; border: none; font-family: 'Space Grotesk', sans-serif; font-weight: bold; padding: calc(var(--base-spacing) * 1.5) calc(var(--base-spacing) * 3); transition: transform 0.3s, box-shadow 0.3s;">
+          Agregar al Pedido
+        </button>
+        <hr style="margin: calc(var(--base-spacing) * 3) 0;">
+        <!-- Sección de pedido -->
+        <h4 style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; color: var(--primary-dark, #2d3436);">Pedido:</h4>
+        <table class="table" id="pedidoTable">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
+              <th>Costo Total</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <!-- Total actualizado -->
+        <h5 id="totalDisplay" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; color: var(--primary-dark, #2d3436);">Total: MXN 0</h5>
+        <!-- Campo oculto para enviar los datos del pedido -->
+        <input type="hidden" name="order_data" id="orderData">
+        <!-- Botón para registrar venta -->
+        <button type="submit" class="btn btn-success"
+          style="background-color: #3949ab; border: none; font-family: 'Space Grotesk', sans-serif; font-weight: bold; padding: calc(var(--base-spacing) * 1.5) calc(var(--base-spacing) * 3); transition: transform 0.3s, box-shadow 0.3s;">
+          Registrar Venta
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Estilos adicionales y script de gestión del pedido -->
+<style>
+  :root {
+    --primary-light: #f8f9fe;
+    --primary-dark: #2d3436;
+    --accent: #ff6f00;
+    --gradient-start: #6a1b9a;
+    --gradient-end: #3949ab;
+    --font-title: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --base-spacing: 8px;
+  }
+  [data-theme="dark"] {
+    --primary-light: #2d3436;
+    --primary-dark: #f8f9fe;
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+  }
+  .form-control {
+    border-radius: 0.25rem;
+    border: 1px solid rgba(45, 52, 54, 0.3);
+  }
+  .form-label {
+    font-weight: 500;
+  }
+  /* Botón con efecto hover */
+  .btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+  }
+  /* Transiciones para tema y elementos */
+  body {
+    transition: background-color 0.3s, color 0.3s;
+  }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script>
+  let order = [];
+  let total = 0;
+  let totalCost = 0;
+  const products = {{ products | tojson }};
+  
+  // Función para actualizar la tabla del pedido y totales
+  function updateTable() {
+    let tbody = $("#pedidoTable tbody");
+    tbody.empty();
+    total = 0;
+    totalCost = 0;
+    order.forEach(function(item) {
+      let subtotal = item.cantidad * products[item.producto].precio;
+      let subcost = item.cantidad * item.costo;
+      total += subtotal;
+      totalCost += subcost;
+      tbody.append(`<tr>
+          <td>${item.producto}</td>
+          <td>${item.cantidad}</td>
+          <td>MXN ${subtotal}</td>
+          <td>MXN ${subcost}</td>
+      </tr>`);
+    });
+    $("#totalDisplay").text("Total: MXN " + total);
+    $("#orderData").val(JSON.stringify(order));
+  }
+  
+  $(document).ready(function(){
+    $("#btnAgregar").click(function(){
+      let producto = $("#productoSelect").val();
+      let cantidad = parseInt($("#cantidadInput").val());
+      let costoInput = $("#costoInput").val();
+      let costo = parseFloat(costoInput);
+      if(isNaN(costo) || costo <= 0){
+          costo = products[producto].costo;
+      }
+      if(cantidad < 1) return;
+      order.push({producto: producto, cantidad: cantidad, costo: costo});
+      updateTable();
+    });
+  });
+</script>
+{% endblock %}

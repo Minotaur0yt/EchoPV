@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title if title else "Echo - Punto de Venta" }}</title>
+  
+  <!-- Fuentes Personalizadas: 'Space Grotesk' para títulos y 'Inter' para cuerpo -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap y Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  
+  <!-- Hoja de estilos personalizada -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  
+  <!-- Variables y estilos inline para personalización rápida -->
+  <style>
+    :root {
+      --primary-light: #f8f9fe;
+      --primary-dark: #2d3436;
+      --accent: #ff6f00;
+      --gradient-start: #6a1b9a;
+      --gradient-end: #3949ab;
+      --font-title: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --base-spacing: 8px;
+    }
+    /* Reglas generales */
+    .wrapper {
+      display: flex;
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    /* Sidebar Artístico */
+    .echo-sidebar {
+      width: 250px;
+      background: linear-gradient(45deg, var(--gradient-start), var(--gradient-end));
+      color: var(--primary-light);
+      display: flex;
+      flex-direction: column;
+      padding: calc(var(--base-spacing) * 2);
+    }
+    .echo-sidebar .sidebar-header {
+      text-align: center;
+      margin-bottom: calc(var(--base-spacing) * 3);
+    }
+    .echo-sidebar .brand-logo {
+      max-width: 100%;
+      height: auto;
+      filter: brightness(0) invert(1);
+    }
+    .echo-sidebar .nav-link {
+      color: var(--primary-light);
+      font-family: var(--font-body);
+      padding: calc(var(--base-spacing) * 1.5);
+      border-radius: 4px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .echo-sidebar .nav-link:hover, .echo-sidebar .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.02);
+    }
+    .echo-sidebar .user-panel {
+      margin-top: auto;
+      padding-top: calc(var(--base-spacing) * 2);
+      border-top: 1px solid rgba(255,255,255,0.3);
+    }
+    .echo-sidebar .user-info {
+      display: flex;
+      align-items: center;
+      font-family: var(--font-body);
+    }
+    .echo-sidebar .user-info i {
+      font-size: 1.5rem;
+      margin-right: var(--base-spacing);
+    }
+    /* Contenido Principal */
+    .echo-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .echo-content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: calc(var(--base-spacing) * 2);
+      padding: calc(var(--base-spacing) * 2);
+      background-color: var(--primary-light);
+      border-bottom: 1px solid rgba(45, 52, 54, 0.2);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .echo-content-header h1 {
+      font-family: var(--font-title);
+      font-weight: bold;
+      color: var(--primary-dark);
+      margin: 0;
+    }
+    /* Alertas Estilizadas */
+    .echo-alert {
+      margin: calc(var(--base-spacing) * 1) calc(var(--base-spacing) * 2);
+      padding: calc(var(--base-spacing) * 1.5);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      font-family: var(--font-body);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    .echo-alert:hover {
+      transform: scale(1.02);
+    }
+    .echo-alert .alert-icon {
+      margin-right: var(--base-spacing);
+    }
+    /* Footer Minimalista */
+    .echo-footer {
+      padding: calc(var(--base-spacing) * 2);
+      text-align: center;
+      background-color: var(--primary-light);
+      border-top: 1px solid rgba(45, 52, 54, 0.2);
+      font-family: var(--font-body);
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .echo-footer .social-links a {
+      margin: 0 calc(var(--base-spacing) / 2);
+      color: var(--accent);
+      transition: color 0.3s;
+    }
+    .echo-footer .social-links a:hover {
+      color: var(--gradient-start);
+    }
+  </style>
+  
+  <!-- Scripts: jQuery y Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="echo-theme">
+  <div class="wrapper">
+    <!-- Sidebar Artístico -->
+    <nav class="echo-sidebar">
+      <div class="sidebar-header">
+        <img src="{{ url_for('static', filename='images/echo.png') }}" alt="Echo Logo" class="brand-logo">
+      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint=='ventas' %}active{% endif %}" href="{{ url_for('ventas') }}">
+            <i class="fas fa-cash-register"></i>
+            <span>Ventas</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint=='reportes' %}active{% endif %}" href="{{ url_for('reportes') }}">
+            <i class="fas fa-chart-pie"></i>
+            <span>Reportes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint=='historial' %}active{% endif %}" href="{{ url_for('historial') }}">
+            <i class="fas fa-history"></i>
+            <span>Historial</span>
+          </a>
+        </li>
+      </ul>
+      <div class="user-panel mt-auto">
+        <div class="user-info">
+          <i class="fas fa-user-circle"></i>
+          <span>{{ current_user.username }}</span>
+          <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline-light ms-2">Salir</a>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Contenido Principal -->
+    <main class="echo-main">
+      <!-- Alertas Estilizadas -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+          <div class="echo-alert alert-{{ category }}">
+            <i class="alert-icon {% if category=='success' %}fas fa-check-circle{% else %}fas fa-exclamation-triangle{% endif %}"></i>
+            <span>{{ message }}</span>
+          </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      
+      <!-- Contenido Dinámico -->
+      <div class="container-fluid px-4">
+        <div class="echo-content-header">
+          <h1>{{ title if title else "Panel de Control" }}</h1>
+          <div class="header-actions">
+            {% block header_actions %}{% endblock %}
+          </div>
+        </div>
+        
+        {% block content %}{% endblock %}
+      </div>
+      
+      <!-- Footer Minimalista -->
+      <footer class="echo-footer">
+        <span>© 2024 Echo · Sounds That Are Seen </span>
+        <div class="social-links">
+          <a href="https://www.instagram.com/cuadros_echo/?hl=es"><i class="fab fa-instagram"></i></a>
+        </div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4" style="--base-spacing: 8px;">
+  <!-- Título de la sección -->
+  <h2 class="mt-4" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; color: var(--primary-dark, #2d3436);">
+    Detalle de la Venta #{{ venta_id }}
+  </h2>
+  
+  <!-- Información de la venta -->
+  <div class="card mt-3 shadow-sm rounded" style="background: rgba(248, 249, 254, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(45, 52, 54, 0.2);">
+    <div class="card-body" style="padding: calc(var(--base-spacing) * 3); font-family: 'Inter', sans-serif;">
+      <p><strong>Para:</strong> {{ sale_header.destinatario }}</p>
+      <p><strong>Descripción:</strong> {{ sale_header.descripcion }}</p>
+    </div>
+  </div>
+  
+  <!-- Card con efecto glassmorphism para listar productos vendidos -->
+  <div class="card mt-3 shadow-sm rounded" style="background: rgba(248, 249, 254, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(45, 52, 54, 0.2);">
+    <!-- Encabezado de la card con gradiente angular -->
+    <div class="card-header" style="background: linear-gradient(45deg, #6a1b9a, #3949ab); padding: calc(var(--base-spacing) * 2); border: none;">
+      <h4 class="mb-0" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; color: #f8f9fe;">
+        Productos Vendidos
+      </h4>
+    </div>
+    <!-- Cuerpo de la card -->
+    <div class="card-body" style="padding: calc(var(--base-spacing) * 3); font-family: 'Inter', sans-serif;">
+      {% if detalles %}
+      <table class="table table-bordered table-hover">
+        <thead style="background-color: rgba(45, 52, 54, 0.1);">
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario (MXN)</th>
+            <th>Costo Unitario (MXN)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for detalle in detalles %}
+          <tr>
+            <td>{{ detalle[0] }}</td>
+            <td>{{ detalle[1] }}</td>
+            <td>MXN {{ detalle[2] }}</td>
+            <td>MXN {{ detalle[3] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="text-center" style="font-family: 'Inter', sans-serif;">No se encontraron detalles para esta venta.</p>
+      {% endif %}
+      <!-- Botón de retorno con efecto de hover -->
+      <a href="{{ url_for('historial') }}" class="btn btn-primary mt-3" 
+         style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; padding: calc(var(--base-spacing) * 1.5) calc(var(--base-spacing) * 3); transition: transform 0.3s, box-shadow 0.3s;">
+         Volver al Historial
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Estilos locales para esta vista -->
+<style>
+  .table th, .table td {
+    vertical-align: middle;
+  }
+  a.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+</style>
+{% endblock %}

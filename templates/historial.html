@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4" style="--base-spacing: 8px;">
+  <!-- Título principal -->
+  <h2 class="mt-4" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; color: var(--primary-dark, #2d3436);">
+    Historial de Ventas
+  </h2>
+  <!-- Card principal con efecto glassmorphism -->
+  <div class="card mt-3 shadow-sm rounded" style="background: rgba(248, 249, 254, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(45, 52, 54, 0.2);">
+    <!-- Encabezado con gradiente y tipografía acentuada -->
+    <div class="card-header" style="background: linear-gradient(45deg, #6a1b9a, #3949ab); padding: calc(var(--base-spacing) * 2); border: none;">
+      <h4 class="mb-0" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; color: #f8f9fe;">
+        Registro de Ventas
+      </h4>
+    </div>
+    <!-- Cuerpo de la card con tabla -->
+    <div class="card-body" style="padding: calc(var(--base-spacing) * 3); font-family: 'Inter', sans-serif;">
+      <table class="table table-striped table-hover">
+        <!-- Cabecera de tabla con fondo sutil -->
+        <thead style="background-color: rgba(45, 52, 54, 0.1);">
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Total (MXN)</th>
+            <th>Ganancia (MXN)</th>
+            <th>Destinatario</th>
+            <th>Descripción</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for venta in ventas %}
+          <tr>
+            <td>{{ venta[0] }}</td>
+            <td>{{ venta[1] }}</td>
+            <td>MXN {{ venta[2] }}</td>
+            <td>MXN {{ venta[3] }}</td>
+            <td>{{ venta[4] }}</td>
+            <td>{{ venta[5] }}</td>
+            <td>
+              <!-- Ícono para ver detalles -->
+              <a href="{{ url_for('venta_detalle', venta_id=venta[0]) }}" class="action-icon" title="Ver Detalles">
+                <i class="fas fa-eye"></i>
+              </a>
+              <!-- Ícono para editar -->
+              <a href="{{ url_for('editar_venta', venta_id=venta[0]) }}" class="action-icon" title="Editar">
+                <i class="fas fa-edit"></i>
+              </a>
+              <!-- Ícono para eliminar: se usa un botón que disparará un modal -->
+              <form action="{{ url_for('eliminar_venta', venta_id=venta[0]) }}" method="POST" style="display:inline-block;" class="delete-form">
+                <button type="button" class="action-icon delete-sale" title="Eliminar" style="border: none; background: transparent; padding: 0;">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" style="border-radius: 10px;">
+      <div class="modal-header" style="background: #ff6f00; color: #fff;">
+        <h5 class="modal-title" id="confirmDeleteModalLabel" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold;">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1);"></button>
+      </div>
+      <div class="modal-body" style="font-family: 'Inter', sans-serif;">
+        ¿Estás seguro de eliminar esta venta?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Estilos locales para los íconos de acción -->
+<style>
+  .table th, .table td {
+    vertical-align: middle;
+  }
+  .action-icon {
+    color: var(--primary-dark, #2d3436);
+    font-size: 1.2rem;
+    margin-right: calc(var(--base-spacing) * 0.5);
+    transition: transform 0.3s, color 0.3s;
+    cursor: pointer;
+  }
+  .action-icon:hover {
+    transform: scale(1.1);
+    color: var(--accent, #ff6f00);
+  }
+  form .action-icon {
+    margin: 0;
+  }
+</style>
+
+<!-- Script para manejar el modal de confirmación de eliminación -->
+<script>
+  var formToDelete = null;
+  $(document).on('click', '.delete-sale', function(e) {
+      e.preventDefault();
+      formToDelete = $(this).closest('form');
+      var myModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+      myModal.show();
+  });
+
+  $('#confirmDeleteBtn').click(function() {
+      if(formToDelete) {
+          formToDelete.submit();
+      }
+  });
+</script>
+{% endblock %}

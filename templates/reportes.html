@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4" style="--base-spacing: 8px;">
+  <!-- Título principal -->
+  <h2 class="mb-4" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; color: var(--primary-dark, #2d3436);">
+    Reportes y Estadísticas
+  </h2>
+
+  <div class="row">
+    <!-- Cuadros Vendidos -->
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm rounded" style="background: linear-gradient(45deg, #6a1b9a, #3949ab); color: #f8f9fe; padding: calc(var(--base-spacing) * 2);">
+        <div class="card-header" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; background: transparent; border: none;">
+          Cuadros Vendidos
+        </div>
+        <div class="card-body" style="font-family: 'Inter', sans-serif;">
+          <h3 class="card-title">{{ cuadros_vendidos }}</h3>
+          <p class="card-text">Número total de cuadros vendidos.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ingresos Totales -->
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm rounded" style="background: linear-gradient(45deg, #3949ab, #6a1b9a); color: #f8f9fe; padding: calc(var(--base-spacing) * 2);">
+        <div class="card-header" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; background: transparent; border: none;">
+          Ingresos Totales
+        </div>
+        <div class="card-body" style="font-family: 'Inter', sans-serif;">
+          <h3 class="card-title">MXN {{ total_revenue }}</h3>
+          <p class="card-text">Total de ingresos generados por las ventas.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ganancias Totales -->
+    <div class="col-md-4 mb-3">
+      <div class="card shadow-sm rounded" style="background: linear-gradient(45deg, #ff6f00, #ff8c00); color: #f8f9fe; padding: calc(var(--base-spacing) * 2);">
+        <div class="card-header" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; background: transparent; border: none;">
+          Ganancias Totales
+        </div>
+        <div class="card-body" style="font-family: 'Inter', sans-serif;">
+          <h3 class="card-title">MXN {{ total_gain }}</h3>
+          <p class="card-text">Beneficio neto después de costos de producción.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estadísticas Adicionales -->
+  <div class="row">
+    <div class="col-md-12 mb-3">
+      <div class="card shadow-sm rounded" style="background: rgba(248, 249, 254, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(45, 52, 54, 0.2); padding: calc(var(--base-spacing) * 2);">
+        <div class="card-header" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; background: transparent; border: none;">
+          Estadísticas Adicionales
+        </div>
+        <div class="card-body" style="font-family: 'Inter', sans-serif;">
+          {% if cuadros_vendidos > 0 %}
+            <p><strong>Venta Promedio:</strong> MXN {{ "%.2f"|format(total_revenue / cuadros_vendidos) }}</p>
+          {% else %}
+            <p>No hay ventas registradas para calcular estadísticas adicionales.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Información Complementaria -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-sm rounded" style="background: rgba(248, 249, 254, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(45, 52, 54, 0.2); padding: calc(var(--base-spacing) * 2);">
+        <div class="card-header" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; background: transparent; border: none;">
+          Información Complementaria
+        </div>
+        <div class="card-body" style="font-family: 'Inter', sans-serif;">
+          <p>Para más detalles sobre cada venta, consulte el <a href="{{ url_for('historial') }}" style="color: var(--accent, #ff6f00); text-decoration: none;">Historial de Ventas</a>.</p>
+          <p>Revise periódicamente este panel para conocer el desempeño de las ventas y tomar decisiones informadas.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Variables CSS y estilos globales -->
+<style>
+  :root {
+    --primary-light: #f8f9fe;
+    --primary-dark: #2d3436;
+    --accent: #ff6f00;
+    --gradient-start: #6a1b9a;
+    --gradient-end: #3949ab;
+    --font-title: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --base-spacing: 8px;
+  }
+  [data-theme="dark"] {
+    --primary-light: #2d3436;
+    --primary-dark: #f8f9fe;
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+  }
+  a {
+    transition: color 0.3s;
+  }
+  a:hover {
+    color: var(--gradient-start);
+  }
+  body {
+    transition: background-color 0.3s, color 0.3s;
+  }
+</style>
+{% endblock %}

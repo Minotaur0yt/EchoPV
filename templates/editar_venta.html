@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Modal para editar la venta -->
+<div class="modal fade show" id="editSaleModal" tabindex="-1" role="dialog" aria-labelledby="editSaleModalLabel" aria-modal="true" style="display: block; background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <form action="{{ url_for('editar_venta', venta_id=venta_id) }}" method="POST">
+      <div class="modal-content" style="border-radius: 10px; overflow: hidden; box-shadow: 0 8px 16px rgba(0,0,0,0.3);">
+        <!-- Encabezado con fondo degradado -->
+        <div class="modal-header" style="background: linear-gradient(45deg, #6a1b9a, #3949ab); color: #fff; padding: 1rem 1.5rem;">
+          <h5 class="modal-title" id="editSaleModalLabel" style="font-family: 'Space Grotesk', sans-serif; font-weight: bold;">Editar Venta #{{ venta_id }}</h5>
+          <!-- Botón de cierre -->
+          <a href="{{ url_for('historial') }}" class="btn-close" aria-label="Close" style="opacity: 0.8; filter: invert(1);"></a>
+        </div>
+        <!-- Cuerpo del modal con controles estilizados -->
+        <div class="modal-body" style="padding: 1.5rem; font-family: 'Inter', sans-serif;">
+          <!-- Metadatos de la venta -->
+          <div class="mb-3">
+            <label for="destinatarioInput" class="form-label" style="font-weight: 600;">Para (Destinatario):</label>
+            <input type="text" class="form-control" id="destinatarioInput" name="destinatario" value="{{ sale.destinatario }}" placeholder="Nombre de la persona o entidad" style="border-radius: 5px; padding: 0.75rem;">
+          </div>
+          <div class="mb-3">
+            <label for="descripcionInput" class="form-label" style="font-weight: 600;">Descripción del Cuadro:</label>
+            <textarea class="form-control" id="descripcionInput" name="descripcion" rows="3" placeholder="Detalles o personalización del cuadro" style="border-radius: 5px; padding: 0.75rem;">{{ sale.descripcion }}</textarea>
+          </div>
+          <hr>
+          <h5 style="font-family: 'Space Grotesk', sans-serif; font-weight: bold; margin-bottom: 1rem;">Productos Vendidos</h5>
+          <div class="table-responsive">
+            <table class="table" id="detalleTable">
+              <thead style="background-color: rgba(45, 52, 54, 0.1);">
+                <tr>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Precio Unitario (MXN)</th>
+                  <th>Costo Unitario (MXN)</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for detail in sale_details %}
+                <tr>
+                  <td>
+                    <input type="hidden" name="detail_id[]" value="{{ detail[0] }}">
+                    <select class="form-control" name="producto[]" style="border-radius: 5px; padding: 0.5rem;">
+                      {% for key, value in products.items() %}
+                        <option value="{{ key }}" {% if key == detail[1] %}selected{% endif %}>{{ key }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" name="cantidad[]" value="{{ detail[2] }}" min="1" style="border-radius: 5px; padding: 0.5rem;">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control" name="precio_unitario[]" value="{{ detail[3] }}" readonly style="border-radius: 5px; padding: 0.5rem;">
+                  </td>
+                  <td>
+                    <input type="number" class="form-control" name="costo[]" value="{{ detail[4] }}" step="0.01" min="0" style="border-radius: 5px; padding: 0.5rem;">
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-danger btn-sm remove-row">Eliminar</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- Botón para agregar un nuevo artículo -->
+          <button type="button" class="btn btn-secondary" id="addRowBtn" style="margin-top: 1rem; font-family: 'Space Grotesk', sans-serif; font-weight: bold;">Agregar Artículo</button>
+          <!-- Template oculto para nueva fila -->
+          <template id="newRowTemplate">
+            <tr>
+              <td>
+                <input type="hidden" name="detail_id[]" value="">
+                <select class="form-control" name="producto[]" style="border-radius: 5px; padding: 0.5rem;">
+                  {% for key, value in products.items() %}
+                    <option value="{{ key }}">{{ key }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <input type="number" class="form-control" name="cantidad[]" value="1" min="1" style="border-radius: 5px; padding: 0.5rem;">
+              </td>
+              <td>
+                <!-- Se utiliza paréntesis para indexar el primer elemento -->
+                <input type="text" class="form-control" name="precio_unitario[]" value="{{ (products|first)[1].precio if products|length > 0 else '' }}" readonly style="border-radius: 5px; padding: 0.5rem;">
+              </td>
+              <td>
+                <input type="number" class="form-control" name="costo[]" value="{{ (products|first)[1].costo if products|length > 0 else '' }}" step="0.01" min="0" style="border-radius: 5px; padding: 0.5rem;">
+              </td>
+              <td>
+                <button type="button" class="btn btn-danger btn-sm remove-row">Eliminar</button>
+              </td>
+            </tr>
+          </template>
+        </div>
+        <!-- Pie del modal con botones de acción -->
+        <div class="modal-footer" style="padding: 1rem 1.5rem; background-color: #f8f9fe;">
+          <a href="{{ url_for('historial') }}" class="btn btn-secondary" style="border-radius: 5px; padding: 0.5rem 1rem; font-family: 'Space Grotesk', sans-serif; font-weight: bold;">Cancelar</a>
+          <button type="submit" class="btn btn-primary" style="border-radius: 5px; padding: 0.5rem 1rem; font-family: 'Space Grotesk', sans-serif; font-weight: bold;">Guardar Cambios</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Función para eliminar una fila del detalle
+  $(document).on('click', '.remove-row', function(){
+    $(this).closest('tr').remove();
+  });
+
+  // Función para agregar una nueva fila usando el template
+  $("#addRowBtn").click(function(){
+    var newRow = $("#newRowTemplate").html();
+    $("#detalleTable tbody").append(newRow);
+  });
+
+  // Actualizar el precio unitario cuando se cambie el producto en las filas nuevas
+  $(document).on('change', 'select[name="producto[]"]', function(){
+    var selectedProduct = $(this).val();
+    var products = {{ products | tojson }};
+    var price = products[selectedProduct].precio;
+    $(this).closest('tr').find('input[name="precio_unitario[]"]').val(price);
+  });
+
+  // Mostrar el modal de forma ininterrumpida
+  $(document).ready(function(){
+    $("#editSaleModal").modal({backdrop: 'static', keyboard: false});
+  });
+</script>
+{% endblock %}
